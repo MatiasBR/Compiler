@@ -536,9 +536,9 @@ static const yytype_int8 yytranslate[] =
   /* YYRLINE[YYN] -- Source line where rule number YYN was defined.  */
 static const yytype_uint8 yyrline[] =
 {
-       0,    32,    32,    45,    52,    53,    54,    58,    65,    70,
-      76,   108,   112,   119,   124,   130,   135,   139,   146,   150,
-     154,   158,   162,   167,   171
+       0,    32,    32,    51,    58,    59,    60,    64,    71,    76,
+      82,   112,   116,   123,   128,   134,   139,   143,   150,   154,
+     158,   162,   166,   171,   175
 };
 #endif
 
@@ -1363,69 +1363,73 @@ yyreduce:
         printSymbolTable();
         printf("\n=== PSEUDO-ASSEMBLY ===\n");
         generateAssembly((yyval.node), 0);
+        
+        printf("\n=== INTERPRETACIÓN ===\n");
+        int result = interpretProgram((yyval.node));
+        printf("Valor de retorno: %d\n", result);
+        printf("\n=== TABLA DE SÍMBOLOS FINAL ===\n");
+        printSymbolTable();
     }
-#line 1368 "parser.tab.c"
+#line 1374 "parser.tab.c"
     break;
 
   case 3:
-#line 46 "parser.y"
+#line 52 "parser.y"
     {
         (yyval.node) = createNode(1, 0, (yyvsp[-3].stringValue), NULL, NULL);
     }
-#line 1376 "parser.tab.c"
-    break;
-
-  case 4:
-#line 52 "parser.y"
-        { (yyval.stringValue) = "int"; }
 #line 1382 "parser.tab.c"
     break;
 
-  case 5:
-#line 53 "parser.y"
-           { (yyval.stringValue) = "bool"; }
+  case 4:
+#line 58 "parser.y"
+        { (yyval.stringValue) = "int"; }
 #line 1388 "parser.tab.c"
     break;
 
-  case 6:
-#line 54 "parser.y"
-           { (yyval.stringValue) = "void"; }
+  case 5:
+#line 59 "parser.y"
+           { (yyval.stringValue) = "bool"; }
 #line 1394 "parser.tab.c"
     break;
 
+  case 6:
+#line 60 "parser.y"
+           { (yyval.stringValue) = "void"; }
+#line 1400 "parser.tab.c"
+    break;
+
   case 7:
-#line 59 "parser.y"
+#line 65 "parser.y"
     {
         (yyval.node) = createNode(2, 0, "BLOCK", (yyvsp[-2].node), (yyvsp[-1].node));
     }
-#line 1402 "parser.tab.c"
+#line 1408 "parser.tab.c"
     break;
 
   case 8:
-#line 66 "parser.y"
+#line 72 "parser.y"
     {
         (yyval.node) = createNode(3, 0, "DECL_LIST", (yyvsp[-1].node), (yyvsp[0].node));
     }
-#line 1410 "parser.tab.c"
+#line 1416 "parser.tab.c"
     break;
 
   case 9:
-#line 70 "parser.y"
+#line 76 "parser.y"
     {
         (yyval.node) = createNode(3, 0, "DECL_LIST", NULL, NULL);
     }
-#line 1418 "parser.tab.c"
+#line 1424 "parser.tab.c"
     break;
 
   case 10:
-#line 77 "parser.y"
+#line 83 "parser.y"
     {
         (yyval.node) = createNode(4, 0, "DECL", NULL, NULL);
-        // Agregar variables a la tabla de símbolos
         char* varType = (yyvsp[-2].stringValue);
         char* varName = (yyvsp[-1].stringValue);
         
-        // Buscar si ya existe
         int exists = 0;
         for(int i = 0; i < symbolTable.count; i++) {
             if(strcmp(symbolTable.symbols[i].name, varName) == 0) {
@@ -1447,125 +1451,125 @@ yyreduce:
             symbolTable.count++;
         }
     }
-#line 1451 "parser.tab.c"
+#line 1455 "parser.tab.c"
     break;
 
   case 11:
-#line 109 "parser.y"
-    {
-        (yyval.stringValue) = (yyvsp[0].stringValue); // Por simplicidad, solo retornamos el último ID
-    }
-#line 1459 "parser.tab.c"
-    break;
-
-  case 12:
 #line 113 "parser.y"
     {
         (yyval.stringValue) = (yyvsp[0].stringValue);
     }
-#line 1467 "parser.tab.c"
+#line 1463 "parser.tab.c"
+    break;
+
+  case 12:
+#line 117 "parser.y"
+    {
+        (yyval.stringValue) = (yyvsp[0].stringValue);
+    }
+#line 1471 "parser.tab.c"
     break;
 
   case 13:
-#line 120 "parser.y"
+#line 124 "parser.y"
     {
         (yyval.node) = createNode(5, 0, "STMT_LIST", (yyvsp[-1].node), (yyvsp[0].node));
     }
-#line 1475 "parser.tab.c"
+#line 1479 "parser.tab.c"
     break;
 
   case 14:
-#line 124 "parser.y"
+#line 128 "parser.y"
     {
         (yyval.node) = createNode(5, 0, "STMT_LIST", NULL, NULL);
     }
-#line 1483 "parser.tab.c"
+#line 1487 "parser.tab.c"
     break;
 
   case 15:
-#line 131 "parser.y"
+#line 135 "parser.y"
     {
         (yyval.node) = createNode(6, 0, "ASSIGN", NULL, (yyvsp[-1].node));
         (yyval.node)->stringValue = strdup((yyvsp[-3].stringValue));
     }
-#line 1492 "parser.tab.c"
+#line 1496 "parser.tab.c"
     break;
 
   case 16:
-#line 136 "parser.y"
+#line 140 "parser.y"
     {
         (yyval.node) = createNode(7, 0, "RETURN", (yyvsp[-1].node), NULL);
     }
-#line 1500 "parser.tab.c"
+#line 1504 "parser.tab.c"
     break;
 
   case 17:
-#line 140 "parser.y"
+#line 144 "parser.y"
     {
         (yyval.node) = createNode(7, 0, "RETURN", NULL, NULL);
     }
-#line 1508 "parser.tab.c"
+#line 1512 "parser.tab.c"
     break;
 
   case 18:
-#line 147 "parser.y"
+#line 151 "parser.y"
     {
         (yyval.node) = createNode(8, 0, "PLUS", (yyvsp[-2].node), (yyvsp[0].node));
     }
-#line 1516 "parser.tab.c"
+#line 1520 "parser.tab.c"
     break;
 
   case 19:
-#line 151 "parser.y"
+#line 155 "parser.y"
     {
         (yyval.node) = createNode(9, 0, "MULT", (yyvsp[-2].node), (yyvsp[0].node));
     }
-#line 1524 "parser.tab.c"
+#line 1528 "parser.tab.c"
     break;
 
   case 20:
-#line 155 "parser.y"
+#line 159 "parser.y"
     {
         (yyval.node) = (yyvsp[-1].node);
     }
-#line 1532 "parser.tab.c"
+#line 1536 "parser.tab.c"
     break;
 
   case 21:
-#line 159 "parser.y"
+#line 163 "parser.y"
     {
         (yyval.node) = createNode(10, (yyvsp[0].intValue), "NUM", NULL, NULL);
     }
-#line 1540 "parser.tab.c"
+#line 1544 "parser.tab.c"
     break;
 
   case 22:
-#line 163 "parser.y"
+#line 167 "parser.y"
     {
         (yyval.node) = createNode(11, 0, "ID", NULL, NULL);
         (yyval.node)->stringValue = strdup((yyvsp[0].stringValue));
     }
-#line 1549 "parser.tab.c"
+#line 1553 "parser.tab.c"
     break;
 
   case 23:
-#line 168 "parser.y"
+#line 172 "parser.y"
     {
         (yyval.node) = createNode(12, 1, "TRUE", NULL, NULL);
     }
-#line 1557 "parser.tab.c"
+#line 1561 "parser.tab.c"
     break;
 
   case 24:
-#line 172 "parser.y"
+#line 176 "parser.y"
     {
         (yyval.node) = createNode(12, 0, "FALSE", NULL, NULL);
     }
-#line 1565 "parser.tab.c"
+#line 1569 "parser.tab.c"
     break;
 
 
-#line 1569 "parser.tab.c"
+#line 1573 "parser.tab.c"
 
       default: break;
     }
@@ -1797,7 +1801,7 @@ yyreturn:
 #endif
   return yyresult;
 }
-#line 177 "parser.y"
+#line 181 "parser.y"
 
 
 SymbolTable symbolTable;
@@ -1910,6 +1914,67 @@ void generateAssembly(ASTNode* node, int depth) {
         default:
             generateAssembly(node->left, depth);
             generateAssembly(node->right, depth);
+    }
+}
+
+int interpretProgram(ASTNode* node) {
+    if(!node) return 0;
+    
+    if(node->type == 0) { // PROGRAM
+        return interpretProgram(node->right);
+    }
+    else if(node->type == 2) { // BLOCK
+        return interpretStatements(node->right);
+    }
+    
+    return 0;
+}
+
+int interpretStatements(ASTNode* node) {
+    if(!node) return 0;
+    
+    if(node->type == 5) { // STMT_LIST
+        if(node->left) {
+            interpretStatements(node->left);
+        }
+        if(node->right) {
+            return interpretStatement(node->right);
+        }
+    }
+    else {
+        return interpretStatement(node);
+    }
+    
+    return 0;
+}
+
+int interpretStatement(ASTNode* node) {
+    if(!node) return 0;
+    
+    switch(node->type) {
+        case 6: { // ASSIGN
+            int value = evaluate(node->right);
+            for(int i = 0; i < symbolTable.count; i++) {
+                if(strcmp(symbolTable.symbols[i].name, node->stringValue) == 0) {
+                    symbolTable.symbols[i].value = value;
+                    printf("Asignación: %s = %d\n", node->stringValue, value);
+                    break;
+                }
+            }
+            return value;
+        }
+        case 7: { // RETURN
+            if(node->left) {
+                int value = evaluate(node->left);
+                printf("Return: %d\n", value);
+                return value;
+            } else {
+                printf("Return: void\n");
+                return 0;
+            }
+        }
+        default:
+            return 0;
     }
 }
 

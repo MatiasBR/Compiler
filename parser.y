@@ -38,6 +38,12 @@ program:
         printSymbolTable();
         printf("\n=== PSEUDO-ASSEMBLY ===\n");
         generateAssembly($$, 0);
+        
+        printf("\n=== INTERPRETACIÓN ===\n");
+        int result = interpretProgram($$);
+        printf("Valor de retorno: %d\n", result);
+        printf("\n=== TABLA DE SÍMBOLOS FINAL ===\n");
+        printSymbolTable();
     }
 ;
 
@@ -76,11 +82,9 @@ decl:
     type var_list SEMICOLON
     {
         $$ = createNode(4, 0, "DECL", NULL, NULL);
-        // Agregar variables a la tabla de símbolos
         char* varType = $1;
         char* varName = $2;
         
-        // Buscar si ya existe
         int exists = 0;
         for(int i = 0; i < symbolTable.count; i++) {
             if(strcmp(symbolTable.symbols[i].name, varName) == 0) {
@@ -107,7 +111,7 @@ decl:
 var_list:
     var_list COMMA ID
     {
-        $$ = $3; // Por simplicidad, solo retornamos el último ID
+        $$ = $3;
     }
     | ID
     {
@@ -286,6 +290,67 @@ void generateAssembly(ASTNode* node, int depth) {
         default:
             generateAssembly(node->left, depth);
             generateAssembly(node->right, depth);
+    }
+}
+
+int interpretProgram(ASTNode* node) {
+    if(!node) return 0;
+    
+    if(node->type == 0) { // PROGRAM
+        return interpretProgram(node->right);
+    }
+    else if(node->type == 2) { // BLOCK
+        return interpretStatements(node->right);
+    }
+    
+    return 0;
+}
+
+int interpretStatements(ASTNode* node) {
+    if(!node) return 0;
+    
+    if(node->type == 5) { // STMT_LIST
+        if(node->left) {
+            interpretStatements(node->left);
+        }
+        if(node->right) {
+            return interpretStatement(node->right);
+        }
+    }
+    else {
+        return interpretStatement(node);
+    }
+    
+    return 0;
+}
+
+int interpretStatement(ASTNode* node) {
+    if(!node) return 0;
+    
+    switch(node->type) {
+        case 6: { // ASSIGN
+            int value = evaluate(node->right);
+            for(int i = 0; i < symbolTable.count; i++) {
+                if(strcmp(symbolTable.symbols[i].name, node->stringValue) == 0) {
+                    symbolTable.symbols[i].value = value;
+                    printf("Asignación: %s = %d\n", node->stringValue, value);
+                    break;
+                }
+            }
+            return value;
+        }
+        case 7: { // RETURN
+            if(node->left) {
+                int value = evaluate(node->left);
+                printf("Return: %d\n", value);
+                return value;
+            } else {
+                printf("Return: void\n");
+                return 0;
+            }
+        }
+        default:
+            return 0;
     }
 }
 
